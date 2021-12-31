@@ -2,15 +2,20 @@ import graphviz
 import pandas as pd
 from pprint import pprint
 from sklearn import tree, preprocessing
-        
-header_consent = "PRIVACY CONSENT. I understand and agree that by filling out this form, I am allowing the researcher (Kairra Cruz) to collect, process, use, share, and disclose my personal information and also to store it as long as necessary for the fulfillment of Facilities Management Capstone Survey of the stated purpose and in accordance with applicable laws, including the Data Privacy Act of 2012 and its Implementing Rules and Regulations. The purpose and extent of the collection, use, sharing, disclosure, and storage of my personal information were cleared to me. "
-header_multiple_choices = '6. What kind of service/s do you usually request? You can choose more than 1.'
-header_suggestions = "Suggestions to improve existing facilities management processes."
-headers_irrelevant_dataset = [header_consent, header_suggestions, "Timestamp", "Email Address"]
-headers_multiple_choice = [header_multiple_choices]
+from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 
+column_consent = "PRIVACY CONSENT. I understand and agree that by filling out this form, I am allowing the researcher (Kairra Cruz) to collect, process, use, share, and disclose my personal information and also to store it as long as necessary for the fulfillment of Facilities Management Capstone Survey of the stated purpose and in accordance with applicable laws, including the Data Privacy Act of 2012 and its Implementing Rules and Regulations. The purpose and extent of the collection, use, sharing, disclosure, and storage of my personal information were cleared to me. "
+column_multiple_choices = '6. What kind of service/s do you usually request? You can choose more than 1.'
+column_suggestions = "Suggestions to improve existing facilities management processes."
+columns_irrelevant_dataset = [column_consent, column_suggestions, "Timestamp", "Email Address"]
+columns_multiple_choice = [column_multiple_choices]
+columns_exclude_one_hot = []
+
+ranking_order = ["Very Dissatisfied", "Dissatisfied", "Satisfied", "Very Satisfied"]
+    
 target_output = '26. The overall quality of the work'
 
+output_suggestions = "suggestions.txt"
 output_pngfile = "report.png"
 output_textfile = "report.txt"
 
@@ -23,18 +28,18 @@ def load_csv():
 def filter_consent(records):
     # filter out responses that did not answer no
 
-    records_consent_no = records[records[header_consent] != "Yes"]
+    records_consent_no = records[records[column_consent] != "Yes"]
     print(f"{len(records_consent_no)} in record replied with 'no consent'")
 
-    return records[records[header_consent] == "Yes"]
+    return records[records[column_consent] == "Yes"]
 
 def cleanup_suggestions(records):
     # filter out suggestions
     records_suggestions = records[
-        records[header_suggestions].notna()
+        records[column_suggestions].notna()
     ]
 
-    suggestions = records_suggestions[header_suggestions].values.tolist()
+    suggestions = records_suggestions[column_suggestions].values.tolist()
 
     # clean up suggestions
     suggestions = [
@@ -53,14 +58,37 @@ def cleanup_suggestions(records):
     ]
 
     suggestions.sort()
-    pprint(suggestions)
-    print(f"{len(suggestions)} suggestions found")
+    
+    with open(output_suggestions, "w") as f:
+        for line in suggestions:
+            f.write(line)
+            f.write("\n")
+
+    print(f"{len(suggestions)} suggestions found. Saved to {output_suggestions}")
 
     return records, suggestions
 
 def filter_irrelevant_columns(records):
     # filter out irrelevant columns
-    return records.drop(headers_irrelevant_dataset, axis=1)
+    return records.drop(columns_irrelevant_dataset, axis=1)
+
+def get_target_output(records):
+    # Ask the user what the target output is
+    default_target_output = -1
+
+    for i, column in enumerate(records.columns):
+        if column == target_output:
+            print("(default) ", end="")
+            default_target_output = i + 1
+        
+        print(f"'{column}'")
+
+    choice = input("Choose column to be output (leave empty for default): ").strip()
+    if choice == "":
+        choice = default_target_output
+    chosen = records.columns[int(choice) - 1]
+
+    return chosen
 
 # https://stackoverflow.com/a/52935270/1599
 def one_hot_encode_and_bind(original_dataframe, feature_to_encode):
@@ -73,7 +101,7 @@ def one_hot_encode_and_bind(original_dataframe, feature_to_encode):
 # Transform multiple choices to list
 # Then one-hot encode records
 # https://stackoverflow.com/a/45312840/1599
-def split_and_one_hot_encode(records, headers_multiple_choice):
+def split_and_one_hot_encode(records, columns_multiple_choice):
     def split(x):
         # Split the cell, but prevent splitting those that have , in their responses
         # 1. Replace "Top," with "Top|"
@@ -90,16 +118,15 @@ def split_and_one_hot_encode(records, headers_multiple_choice):
         x = [_ for _ in x if _]
         return x
         
-    for header in headers_multiple_choice:
-        records[header_multiple_choices] = records[header].apply(split)
-        from sklearn.preprocessing import MultiLabelBinarizer
+    for column in columns_multiple_choice:
+        records[column_multiple_choices] = records[column].apply(split)
 
         mlb = MultiLabelBinarizer(sparse_output=True)
 
         records = records.join(
             pd.DataFrame.sparse.from_spmatrix(
                 mlb.fit_transform(
-                    records.pop(header)),
+                    records.pop(column)),
                     index=records.index,
                     columns=mlb.classes_
                 )
@@ -107,18 +134,34 @@ def split_and_one_hot_encode(records, headers_multiple_choice):
 
     return records
 
-def preprocess_records_for_fitting(records):
-    # preprocess records for fitting to decision tree
-    # 1. One hot encode responses with multiple choices
-    # 2. One hot encode responses everything else
-    
-    records = split_and_one_hot_encode(records, headers_multiple_choice)
-    
-    for header in records.columns:
-        if header == target_output:
+def one_hot_encode(records, columns_exclude_one_hot):
+    for column in records.columns:
+        if column == target_output or column in columns_exclude_one_hot:
             continue
 
-        records = one_hot_encode_and_bind(records, header)
+        records = one_hot_encode_and_bind(records, column)
+
+    return records
+
+def label_encode(records, columns_exclude_one_hot):    
+    # https://towardsdatascience.com/categorical-encoding-using-label-encoding-and-one-hot-encoder-911ef77fb5bd
+    le = LabelEncoder()
+    le.fit(ranking_order)
+
+    for column in columns_exclude_one_hot:
+        records[column] = le.transform(records[column])
+
+    return records
+
+def preprocess_records_for_fitting(records, target_output):
+    # preprocess records for fitting to decision tree
+    # 1. One hot encode responses with multiple choices
+    # 2. Label encode
+    # 3. One hot encode responses everything else
+
+    records = split_and_one_hot_encode(records, columns_multiple_choice)
+    records = label_encode(records, columns_exclude_one_hot)
+    records = one_hot_encode(records, columns_exclude_one_hot)
 
     return records
 
@@ -127,6 +170,9 @@ def fit_to_model(records, target_output):
     X = records.loc[:, records.columns != target_output]
     y = records[target_output]
     classifier = tree.DecisionTreeClassifier().fit(X, y)
+
+    print(f"Target column is: {target_output}")
+    print(f"Outputs are: {y.unique()}")
 
     return classifier, X, y
 
@@ -153,8 +199,8 @@ def generate_output(classifier, X, y):
     
         #for i, class_name in enumerate(output_label.classes_):
         #    export = export.replace(f"class: {i}", f"class: {class_name}")
-        report = report.replace(f"<= 0.50", "== FALSE")
-        report = report.replace(f">  0.50", "== TRUE")
+        #report = report.replace(f"<= 0.50", "== FALSE")
+        #report = report.replace(f">  0.50", "== TRUE")
         
         with open(output_textfile, "w") as f:
             f.write(report)
@@ -169,8 +215,9 @@ def main():
     records = filter_consent(records)
     suggestions = cleanup_suggestions(records)
     records = filter_irrelevant_columns(records)
+    target_output = get_target_output(records)
 
-    records = preprocess_records_for_fitting(records)
+    records = preprocess_records_for_fitting(records, target_output)
     classifier, X, y = fit_to_model(records, target_output)
 
     generate_output(classifier, X, y)
