@@ -1,0 +1,11 @@
+0 in record replied with 'no consent'
+122 suggestions found. Saved to suggestions.txt
+
+Decision tree accuracy: 0.8968446601941747
+Output written to decision_tree.svg
+
+k-Nearest Neighbors accuracy: 0.904126213592233
+Saved KNN densities.png
+
+Logistic Regression accuracy: 0.9186893203883495
+Saved Logistic Regression densities.png

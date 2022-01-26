@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from sklearn import tree, neighbors, linear_model
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from sklearn.model_selection import train_test_split
+
+from dtreeviz.trees import dtreeviz
 from pprint import pprint
 
 column_consent = "PRIVACY CONSENT. I understand and agree that by filling out this form, I am allowing the researcher (Kairra Cruz) to collect, process, use, share, and disclose my personal information and also to store it as long as necessary for the fulfillment of Facilities Management Capstone Survey of the stated purpose and in accordance with applicable laws, including the Data Privacy Act of 2012 and its Implementing Rules and Regulations. The purpose and extent of the collection, use, sharing, disclosure, and storage of my personal information were cleared to me. "
@@ -200,15 +202,18 @@ def generate_decision_tree_report(classifier, X, y):
 
     def generate_dtreeviz():
         # https://mljar.com/blog/visualize-decision-tree/
-        from dtreeviz.trees import dtreeviz
-        breakpoint()
-        viz = dtreeviz(classifier, X, y,
-                target_name="target",
-                feature_names=X.columns.tolist(),  
-                #class_names= y.unique(), 
-                class_names= ranking_order, 
-        )
+        import warnings
+        
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            viz = dtreeviz(classifier, X, y,
+                    target_name="target",
+                    feature_names=X.columns.tolist(),  
+                    #class_names= y.unique(), 
+                    class_names= ranking_order, 
+            )
         viz.save(output_svgfile) 
+        print(f"Output written to {output_svgfile}")
 
     def generate_png():
         # Graphical tree:
@@ -324,6 +329,7 @@ def main():
     ]
 
     for classfier_name, classifier_class, classifier_report_generator in classifiers:
+        print("")
         classifier, X, y = fit_to_model(classfier_name, classifier_class, records, target_output)
 
         if classifier_report_generator:
