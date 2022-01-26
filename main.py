@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from sklearn import tree, neighbors, linear_model
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from sklearn.model_selection import train_test_split
-from mlxtend.plotting import plot_decision_regions
 from pprint import pprint
 
 column_consent = "PRIVACY CONSENT. I understand and agree that by filling out this form, I am allowing the researcher (Kairra Cruz) to collect, process, use, share, and disclose my personal information and also to store it as long as necessary for the fulfillment of Facilities Management Capstone Survey of the stated purpose and in accordance with applicable laws, including the Data Privacy Act of 2012 and its Implementing Rules and Regulations. The purpose and extent of the collection, use, sharing, disclosure, and storage of my personal information were cleared to me. "
@@ -23,8 +22,6 @@ ranking_order = ["Very Dissatisfied", "Dissatisfied", "Satisfied", "Very Satisfi
 target_output = '26. The overall quality of the work'
 
 output_suggestions = "suggestions.txt"
-output_pngfile = "report.png"
-output_textfile = "report.txt"
 
 
 def load_csv():
@@ -197,6 +194,10 @@ def fit_to_model(classfier_name, classifier_class, records, target_output):
     return classifier, X, y
 
 def generate_decision_tree_report(classifier, X, y):
+    output_pngfile = "decision_tree.png"
+    output_textfile = "decision_tree.txt"
+    output_svgfile = "decision_tree.svg"
+
     def generate_dtreeviz():
         # https://mljar.com/blog/visualize-decision-tree/
         from dtreeviz.trees import dtreeviz
@@ -207,7 +208,7 @@ def generate_decision_tree_report(classifier, X, y):
                 #class_names= y.unique(), 
                 class_names= ranking_order, 
         )
-        viz.save("decision_tree.svg") 
+        viz.save(output_svgfile) 
 
     def generate_png():
         # Graphical tree:
@@ -239,12 +240,12 @@ def generate_decision_tree_report(classifier, X, y):
         
         print(f"Output written to {output_textfile}")
 
-    #generate_dtreeviz()
+    generate_dtreeviz()
     #generate_png()
     #generate_txt()
 
 # https://stackoverflow.com/a/56301555/1599
-def generate_knn_report(classifier, X, y):
+def generate_density_report(filename, classifier, X, y):
     '''
     Plot features densities depending on the outcome values
     '''
@@ -294,25 +295,18 @@ def generate_knn_report(classifier, X, y):
         ax.set_title(f"'{column_name.strip()}' density")
         ax.grid('on')
 
-    filename = "KNN densities.png"
 #    plt.show()
     fig.savefig(filename)
-    print(f"Saved KNN to {filename}")
 
-def generate_knn_report_(classifier, X, y):
-    feature_names = X.columns.tolist()
-    plot_decision_regions(X.to_numpy(), y.to_numpy(), clf=classifier,
-        legend=2,
-        filler_feature_values={i: _ for i, _ in enumerate(feature_names)}
-    )
+def generate_knn_report(classifier, X, y):
+    filename = "KNN densities.png"
+    generate_density_report(filename, classifier, X, y)
+    print(f"Saved {filename}")
 
-    # Adding axes annotations
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    k=5
-    plt.title("Knn with K="+ str(k))
-    plt.show()
- 
+def generate_logistic_regression_report(classifier, X, y):
+    filename = "Logistic Regression densities.png"
+    generate_density_report(filename, classifier, X, y)
+    print(f"Saved {filename}")
 
 def main():
     records = load_csv()
@@ -326,7 +320,7 @@ def main():
     classifiers = [
         ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
         ("k-Nearest Neighbors", neighbors.KNeighborsClassifier(), generate_knn_report),
-        ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), None),
+        ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
     ]
 
     for classfier_name, classifier_class, classifier_report_generator in classifiers:
