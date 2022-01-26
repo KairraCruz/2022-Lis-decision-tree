@@ -1,11 +1,43 @@
 0 in record replied with 'no consent'
+25 'other' values found:
+{'As needed',
+ 'As per need',
+ 'Have only requested once as I have only lived independently for less than 2 '
+ 'years',
+ 'If broken.',
+ 'If deemed necessary',
+ 'If needed',
+ 'If needed ',
+ 'If things are broke and we really need to fix it',
+ 'It depends',
+ 'None ',
+ 'Once a week',
+ 'Only in case of a need for the service',
+ 'Only when needed',
+ 'There is scheduled maintenance for services and facilities as part of the '
+ 'contract, hence request is not usually needed',
+ 'Upon turn over',
+ "We don't request or call for maintenance or repairs, because we can manage "
+ 'to install or fix some of the above mentioned services such as installing '
+ 'double locks, drain cleaning, faucet installation, lighting and fixtures '
+ 'installation and repair, tv bracket installation and washing machine repair.',
+ 'When necessary',
+ 'When need arise',
+ 'When needed',
+ 'When needed only',
+ 'When required',
+ 'When required (if they break down). I expect the flat to come with all of '
+ 'these facilities.',
+ 'as needed',
+ 'depends on the situation',
+ 'once in three years'}
 122 suggestions found. Saved to suggestions.txt
 
-Decision tree accuracy: 0.8968446601941747
+Decision tree accuracy: 0.9029126213592233
 Output written to decision_tree.svg
 
-k-Nearest Neighbors accuracy: 0.904126213592233
+k-Nearest Neighbors accuracy: 0.9101941747572816
 Saved KNN densities.png
 
-Logistic Regression accuracy: 0.9186893203883495
+Logistic Regression accuracy: 0.9247572815533981
 Saved Logistic Regression densities.png

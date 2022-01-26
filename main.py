@@ -14,6 +14,10 @@ from pprint import pprint
 column_consent = "PRIVACY CONSENT. I understand and agree that by filling out this form, I am allowing the researcher (Kairra Cruz) to collect, process, use, share, and disclose my personal information and also to store it as long as necessary for the fulfillment of Facilities Management Capstone Survey of the stated purpose and in accordance with applicable laws, including the Data Privacy Act of 2012 and its Implementing Rules and Regulations. The purpose and extent of the collection, use, sharing, disclosure, and storage of my personal information were cleared to me. "
 column_multiple_choices = '6. What kind of service/s do you usually request? You can choose more than 1.'
 column_suggestions = "Suggestions to improve existing facilities management processes."
+column_have_other_option = '7. How often do you request for the above mentioned services?'
+column_have_other_option_values = "Once a month,Twice a month,Once every 3 months,Twice every 3 months,Once every 6 months,Twice every 6 months,Once a year,Twice a year".split(",")
+column_have_other_option_subtitute_value = "Other Answer"
+
 columns_irrelevant_dataset = [column_consent, column_suggestions, "Timestamp", "Email Address"]
 columns_multiple_choice = [column_multiple_choices]
 columns_exclude_one_hot = []
@@ -24,7 +28,6 @@ ranking_order = ["Very Dissatisfied", "Dissatisfied", "Satisfied", "Very Satisfi
 target_output = '26. The overall quality of the work'
 
 output_suggestions = "suggestions.txt"
-
 
 def load_csv():
     filename = "responses.csv"
@@ -38,6 +41,24 @@ def filter_consent(records):
     print(f"{len(records_consent_no)} in record replied with 'no consent'")
 
     return records[records[column_consent] == "Yes"]
+
+def update_other_values(records):
+    # one of the column have fill-in-the-blank others option.
+    # this caused those rows that have filled in others as extra values instead of an "other" value.
+    other_values = set()
+    
+    def subtitute_func(row):
+        if row in column_have_other_option_values:
+            return row
+
+        other_values.add(row)
+        return column_have_other_option_subtitute_value
+
+    records[column_have_other_option] = records[column_have_other_option].apply(subtitute_func)
+    print(f"{len(other_values)} 'other' values found:")
+    pprint(other_values)
+
+    return records
 
 def cleanup_suggestions(records):
     # filter out suggestions
@@ -160,27 +181,34 @@ def one_hot_encode(records, columns_to_label_encode):
     return records
 
 # if columns_to_label_encode == None, encode all columns
-def label_encode(records, columns_to_label_encode):
+def label_encode(records, columns_to_label_encode, target_output, ranking_order):
     # https://towardsdatascience.com/categorical-encoding-using-label-encoding-and-one-hot-encoder-911ef77fb5bd
     if columns_to_label_encode is None:
         columns_to_label_encode = records.columns
 
+
     for column in columns_to_label_encode:
-        records[column] = LabelEncoder().fit_transform(records[column])
+        if column != target_output:
+            records[column] = LabelEncoder().fit_transform(records[column])
+        else:
+            le = LabelEncoder()
+            le.fit(ranking_order)
+            records[column] = le.transform(records[column])
+            ranking_order = list(le.classes_)
 
-    return records
+    return records, ranking_order
 
-def preprocess_records_for_fitting(records, target_output):
+def preprocess_records_for_fitting(records, target_output, ranking_order):
     # preprocess records for fitting to decision tree
     # 1. One hot encode responses with multiple choices
     # 2. Label encode
     # 3. One hot encode responses everything else
 
     records = split_multiple_choice_and_one_hot_encode(records, columns_multiple_choice)
-    records = label_encode(records, columns_to_label_encode)
+    records, ranking_order = label_encode(records, columns_to_label_encode, target_output, ranking_order)
     records = one_hot_encode(records, columns_to_label_encode)
 
-    return records
+    return records, ranking_order
 
 def fit_to_model(classfier_name, classifier_class, records, target_output):
     X = records.loc[:, records.columns != target_output]
@@ -195,7 +223,7 @@ def fit_to_model(classfier_name, classifier_class, records, target_output):
 
     return classifier, X, y
 
-def generate_decision_tree_report(classifier, X, y):
+def generate_decision_tree_report(classifier, X, y, ranking_order):
     output_pngfile = "decision_tree.png"
     output_textfile = "decision_tree.txt"
     output_svgfile = "decision_tree.svg"
@@ -250,15 +278,11 @@ def generate_decision_tree_report(classifier, X, y):
     #generate_txt()
 
 # https://stackoverflow.com/a/56301555/1599
-def generate_density_report(filename, classifier, X, y):
+def generate_density_report(filename, classifier, X, y, ranking_order):
     '''
     Plot features densities depending on the outcome values
     '''
     # separate data based on outcome values
-#    outcome_0 = y[y == 0]
-#    outcome_1 = y[y == 1]
-#    outcome_2 = y[y == 2]
-#    outcome_3 = y[y == 3]
 
     data = pd.concat([X, y], axis=1)
 
@@ -270,7 +294,6 @@ def generate_density_report(filename, classifier, X, y):
     # init figure
     matplotlib.rc("figure", figsize=(20,100))
     
-    #fig, axs = plt.subplots(8, 1)
     fig, axs = plt.subplots(len(X.columns), 1)
     fig.suptitle('Features densities')
     plt.subplots_adjust(left = 0.25, right = 0.9, bottom = 0.1, top = 0.95,
@@ -278,7 +301,6 @@ def generate_density_report(filename, classifier, X, y):
 
     # plot densities for outcomes
     for i, column_name in enumerate(X.columns):
-#            print(column_name)
         ax = axs[i]
             
         #plt.subplot(4, 2, names.index(column_name) + 1)
@@ -303,37 +325,61 @@ def generate_density_report(filename, classifier, X, y):
 #    plt.show()
     fig.savefig(filename)
 
-def generate_knn_report(classifier, X, y):
+def generate_knn_report(classifier, X, y, ranking_order):
     filename = "KNN densities.png"
-    generate_density_report(filename, classifier, X, y)
+    generate_density_report(filename, classifier, X, y, ranking_order)
     print(f"Saved {filename}")
 
-def generate_logistic_regression_report(classifier, X, y):
+def generate_logistic_regression_report(classifier, X, y, ranking_order):
     filename = "Logistic Regression densities.png"
-    generate_density_report(filename, classifier, X, y)
+    generate_density_report(filename, classifier, X, y, ranking_order)
     print(f"Saved {filename}")
 
-def main():
-    records = load_csv()
+classifiers = [
+    ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
+    ("k-Nearest Neighbors", neighbors.KNeighborsClassifier(), generate_knn_report),
+    ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
+]
+
+def cleanup_dataset(records):
     records = filter_consent(records)
+    records = update_other_values(records)
     suggestions = cleanup_suggestions(records)
     records = filter_irrelevant_columns(records)
+
+    return records
+
+def prepare_records(ranking_order):
+    records = load_csv()
+    records = cleanup_dataset(records)
     target_output = get_target_output(records, prompt=False)
+    records, ranking_order = preprocess_records_for_fitting(records, target_output, ranking_order)
 
-    records = preprocess_records_for_fitting(records, target_output)
+    return records, target_output, ranking_order
 
-    classifiers = [
-        ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
-        ("k-Nearest Neighbors", neighbors.KNeighborsClassifier(), generate_knn_report),
-        ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
-    ]
+def main(ranking_order):
+    records, target_output, ranking_order = prepare_records(ranking_order)
 
     for classfier_name, classifier_class, classifier_report_generator in classifiers:
         print("")
         classifier, X, y = fit_to_model(classfier_name, classifier_class, records, target_output)
 
         if classifier_report_generator:
-            classifier_report_generator(classifier, X, y)
+            classifier_report_generator(classifier, X, y, ranking_order)
+
+def predict(ranking_order, classifier_class_index, data):
+    records, target_output, ranking_order = prepare_records(ranking_order)
+
+    classfier_name, classifier_class, classifier_report_generator = classifiers[classifier_class_index]
+    classifier, X, y = fit_to_model(classfier_name, classifier_class, records, target_output)
+
+    breakpoint()
+    predict = classifier.predict(X[0:1])
+    output = ranking_order[predict[0]]
+    print(output)
+    
+    return output
 
 if __name__ == "__main__":
-    main()
+    main(ranking_order)
+#    predict(ranking_order, 0, None)
