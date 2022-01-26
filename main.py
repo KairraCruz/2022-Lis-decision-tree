@@ -1,9 +1,14 @@
 import graphviz
+import numpy
 import pandas as pd
-from pprint import pprint
-from sklearn import tree, preprocessing
+import matplotlib
+import matplotlib.pyplot as plt
+
+from sklearn import tree, neighbors, linear_model
 from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from sklearn.model_selection import train_test_split
+from mlxtend.plotting import plot_decision_regions
+from pprint import pprint
 
 column_consent = "PRIVACY CONSENT. I understand and agree that by filling out this form, I am allowing the researcher (Kairra Cruz) to collect, process, use, share, and disclose my personal information and also to store it as long as necessary for the fulfillment of Facilities Management Capstone Survey of the stated purpose and in accordance with applicable laws, including the Data Privacy Act of 2012 and its Implementing Rules and Regulations. The purpose and extent of the collection, use, sharing, disclosure, and storage of my personal information were cleared to me. "
 column_multiple_choices = '6. What kind of service/s do you usually request? You can choose more than 1.'
@@ -74,18 +79,24 @@ def filter_irrelevant_columns(records):
     # filter out irrelevant columns
     return records.drop(columns_irrelevant_dataset, axis=1)
 
-def get_target_output(records):
+def get_target_output(records, prompt=True):
     # Ask the user what the target output is
     default_target_output = -1
 
     for i, column in enumerate(records.columns):
         if column == target_output:
-            print("(default) ", end="")
+            if prompt:
+                print("(default) ", end="")
+
             default_target_output = i + 1
         
-        print(f"'{column}'")
+        if prompt:
+            print(f"'{column}'")
 
-    choice = input("Choose column id to be output (leave empty for default): ").strip()
+    choice = ""
+    if prompt:
+        choice = input("Choose column id to be output (leave empty for default): ").strip()
+
     if choice == "":
         choice = default_target_output
     chosen = records.columns[int(choice) - 1]
@@ -172,20 +183,20 @@ def preprocess_records_for_fitting(records, target_output):
 
     return records
 
-def fit_to_model(records, target_output):
+def fit_to_model(classfier_name, classifier_class, records, target_output):
     X = records.loc[:, records.columns != target_output]
     y = records[target_output]
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42, shuffle=True)
 
-    classifier = tree.DecisionTreeClassifier().fit(X_train, y_train)
+    classifier = classifier_class.fit(X_train, y_train)
 
-    print(f"Target column is: {target_output}")
-    print(f"Outputs are: {y.unique()}")
+    score = classifier.score(X_test, y_test)
+    print(f"{classfier_name} accuracy: {score}")
 
     return classifier, X, y
 
-def generate_output(classifier, X, y):
+def generate_decision_tree_report(classifier, X, y):
     def generate_dtreeviz():
         # https://mljar.com/blog/visualize-decision-tree/
         from dtreeviz.trees import dtreeviz
@@ -228,22 +239,101 @@ def generate_output(classifier, X, y):
         
         print(f"Output written to {output_textfile}")
 
-    generate_dtreeviz()
+    #generate_dtreeviz()
     #generate_png()
-    generate_txt()
+    #generate_txt()
+
+# https://stackoverflow.com/a/56301555/1599
+def generate_knn_report(classifier, X, y):
+    '''
+    Plot features densities depending on the outcome values
+    '''
+    # separate data based on outcome values
+#    outcome_0 = y[y == 0]
+#    outcome_1 = y[y == 1]
+#    outcome_2 = y[y == 2]
+#    outcome_3 = y[y == 3]
+
+    data = pd.concat([X, y], axis=1)
+
+    outcome_0 = data[data[target_output] == 0]
+    outcome_1 = data[data[target_output] == 1]
+    outcome_2 = data[data[target_output] == 2]
+    outcome_3 = data[data[target_output] == 3]
+
+    # init figure
+    matplotlib.rc("figure", figsize=(20,100))
+    
+    #fig, axs = plt.subplots(8, 1)
+    fig, axs = plt.subplots(len(X.columns), 1)
+    fig.suptitle('Features densities')
+    plt.subplots_adjust(left = 0.25, right = 0.9, bottom = 0.1, top = 0.95,
+                        wspace = 0.2, hspace = 0.9)
+
+    # plot densities for outcomes
+    for i, column_name in enumerate(X.columns):
+#            print(column_name)
+        ax = axs[i]
+            
+        #plt.subplot(4, 2, names.index(column_name) + 1)
+        
+        for outcome, color, ranking in zip(
+                [outcome_0, outcome_1, outcome_2, outcome_3], 
+                ["red", "green", "blue", "yellow"],
+                ranking_order
+            ):
+
+            try:
+                outcome[column_name].plot(kind='density', ax=ax, subplots=True, 
+                                            sharex=False, color=color, legend=True,
+                                            label=ranking)
+            except numpy.linalg.LinAlgError:
+                continue
+            
+        #ax.set_xlabel(f"Values for '{column_name.strip()}'")
+        ax.set_title(f"'{column_name.strip()}' density")
+        ax.grid('on')
+
+    filename = "KNN densities.png"
+#    plt.show()
+    fig.savefig(filename)
+    print(f"Saved KNN to {filename}")
+
+def generate_knn_report_(classifier, X, y):
+    feature_names = X.columns.tolist()
+    plot_decision_regions(X.to_numpy(), y.to_numpy(), clf=classifier,
+        legend=2,
+        filler_feature_values={i: _ for i, _ in enumerate(feature_names)}
+    )
+
+    # Adding axes annotations
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    k=5
+    plt.title("Knn with K="+ str(k))
+    plt.show()
+ 
 
 def main():
     records = load_csv()
     records = filter_consent(records)
     suggestions = cleanup_suggestions(records)
     records = filter_irrelevant_columns(records)
-    target_output = get_target_output(records)
+    target_output = get_target_output(records, prompt=False)
 
     records = preprocess_records_for_fitting(records, target_output)
-    classifier, X, y = fit_to_model(records, target_output)
 
-    generate_output(classifier, X, y)
+    classifiers = [
+        ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
+        ("k-Nearest Neighbors", neighbors.KNeighborsClassifier(), generate_knn_report),
+        ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), None),
+    ]
 
+    for classfier_name, classifier_class, classifier_report_generator in classifiers:
+        classifier, X, y = fit_to_model(classfier_name, classifier_class, records, target_output)
+
+        if classifier_report_generator:
+            classifier_report_generator(classifier, X, y)
 
 if __name__ == "__main__":
     main()
