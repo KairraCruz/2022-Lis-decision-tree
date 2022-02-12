@@ -1,4 +1,5 @@
 *.svg
 *.png
 decision_tree
+__pycache__
 *.zip

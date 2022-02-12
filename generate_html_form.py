@@ -48,12 +48,17 @@ checkboxes =[
 'TV/Bracket Installation and Repair',
 'Washing Machine Installation and Repair', 'Water Closet Bowl']
 
-url = "https://localhost/api"
+url = "{{ api_end_point }}"
 output = f"""
 <style>
 label
 {{
     display: block;
+}}
+
+div#spacer
+{{
+    margin-top: 30px;
 }}
 
 </style>
@@ -63,36 +68,44 @@ label
 
 template = """
     <label>{}: 
-        <input id="{}" type="radio" name="{}" >
+        <input id="{}" type="radio" name="{}" value="{}" required>
     </label>
 """
 
-for id, (name, choice_values) in enumerate(choices):
+for name, choice_values in choices:
+    id = name.split(".")[0]
+
     output += f"<label>{name}</label>"
 
     for value in choice_values:
-        output += template.format(value, id, id, name)
+        output += template.format(value, id, name, value)
+
+    output += "<div id=spacer></div>"
 
 template = """
     <label>{}: 
-        <input id="{}" type="radio" name="{}" >
+        <input id="{}" type="radio" name="{}" value="{}" required>
     </label>
 """
 
-for id, name in enumerate(statisfactions):
+for name in statisfactions:
+    id = name.split(".")[0]
     output += f"<label>{name}</label>"
 
     for label in ["Very Satisfied", "Satisfied", "Dissatisfied", "Very Dissatisfied"]:
-        output += template.format(label, id, id, name)
+        output += template.format(label, id, name, label)
 
-output += f"<label>6. What kind of service/s do you usually request? You can choose more than 1.</label>"
+    output += "<div id=spacer></div>"
+
+id = "6. What kind of service/s do you usually request? You can choose more than 1."
+output += f"<label>{id}</label>"
 template = """
     <label>{}:
         <input id="{}" type="checkbox" name="{}" value="{}" >
     </label>
 """
 
-for id, name in enumerate(checkboxes):
+for name in checkboxes:
     output += template.format(name, id, id, name)
 
 output += """

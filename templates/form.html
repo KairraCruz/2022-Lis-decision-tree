@@ -1,0 +1,542 @@
+
+<style>
+label
+{
+    display: block;
+}
+
+div#spacer
+{
+    margin-top: 30px;
+}
+
+</style>
+
+<form action="{{ api_end_point }}" method="post">
+<label>1. Location of Condominium/Flat/Apartment/Townhouse/Villa</label>
+    <label>Makati: 
+        <input id="1" type="radio" name="1. Location of Condominium/Flat/Apartment/Townhouse/Villa" value="Makati" required>
+    </label>
+
+    <label>Manila: 
+        <input id="1" type="radio" name="1. Location of Condominium/Flat/Apartment/Townhouse/Villa" value="Manila" required>
+    </label>
+
+    <label>Taguig: 
+        <input id="1" type="radio" name="1. Location of Condominium/Flat/Apartment/Townhouse/Villa" value="Taguig" required>
+    </label>
+
+    <label>Quezon City: 
+        <input id="1" type="radio" name="1. Location of Condominium/Flat/Apartment/Townhouse/Villa" value="Quezon City" required>
+    </label>
+
+    <label>Outside Manila: 
+        <input id="1" type="radio" name="1. Location of Condominium/Flat/Apartment/Townhouse/Villa" value="Outside Manila" required>
+    </label>
+
+    <label>Outside the Philippines: 
+        <input id="1" type="radio" name="1. Location of Condominium/Flat/Apartment/Townhouse/Villa" value="Outside the Philippines" required>
+    </label>
+<div id=spacer></div><label>2. Gender</label>
+    <label>Male: 
+        <input id="2" type="radio" name="2. Gender" value="Male" required>
+    </label>
+
+    <label>Female: 
+        <input id="2" type="radio" name="2. Gender" value="Female" required>
+    </label>
+<div id=spacer></div><label>3. Age of head of household</label>
+    <label>18 - 24: 
+        <input id="3" type="radio" name="3. Age of head of household" value="18 - 24" required>
+    </label>
+
+    <label>25 -31: 
+        <input id="3" type="radio" name="3. Age of head of household" value="25 -31" required>
+    </label>
+
+    <label>32 - 38: 
+        <input id="3" type="radio" name="3. Age of head of household" value="32 - 38" required>
+    </label>
+
+    <label>39 - 45: 
+        <input id="3" type="radio" name="3. Age of head of household" value="39 - 45" required>
+    </label>
+
+    <label>46 - 52: 
+        <input id="3" type="radio" name="3. Age of head of household" value="46 - 52" required>
+    </label>
+
+    <label>53 - 59: 
+        <input id="3" type="radio" name="3. Age of head of household" value="53 - 59" required>
+    </label>
+
+    <label>60 and above: 
+        <input id="3" type="radio" name="3. Age of head of household" value="60 and above" required>
+    </label>
+<div id=spacer></div><label>4. Type of unit</label>
+    <label>Apartment: 
+        <input id="4" type="radio" name="4. Type of unit" value="Apartment" required>
+    </label>
+
+    <label>Condominium Unit: 
+        <input id="4" type="radio" name="4. Type of unit" value="Condominium Unit" required>
+    </label>
+
+    <label>Flat: 
+        <input id="4" type="radio" name="4. Type of unit" value="Flat" required>
+    </label>
+
+    <label>Townhouse: 
+        <input id="4" type="radio" name="4. Type of unit" value="Townhouse" required>
+    </label>
+
+    <label>Villa: 
+        <input id="4" type="radio" name="4. Type of unit" value="Villa" required>
+    </label>
+<div id=spacer></div><label>5. Number of people in your household</label>
+    <label>1 - 2: 
+        <input id="5" type="radio" name="5. Number of people in your household" value="1 - 2" required>
+    </label>
+
+    <label>3 - 5: 
+        <input id="5" type="radio" name="5. Number of people in your household" value="3 - 5" required>
+    </label>
+
+    <label>6 - 7: 
+        <input id="5" type="radio" name="5. Number of people in your household" value="6 - 7" required>
+    </label>
+
+    <label>8 and above: 
+        <input id="5" type="radio" name="5. Number of people in your household" value="8 and above" required>
+    </label>
+<div id=spacer></div><label>7. How often do you request for the above mentioned services?</label>
+    <label>Once a month: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Once a month" required>
+    </label>
+
+    <label>Twice a month: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Twice a month" required>
+    </label>
+
+    <label>Once every 3 months: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Once every 3 months" required>
+    </label>
+
+    <label>Twice every 3 months: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Twice every 3 months" required>
+    </label>
+
+    <label>Once every 6 months: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Once every 6 months" required>
+    </label>
+
+    <label>Twice every 6 months: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Twice every 6 months" required>
+    </label>
+
+    <label>Once a year: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Once a year" required>
+    </label>
+
+    <label>Twice a year: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Twice a year" required>
+    </label>
+
+    <label>Other Answer: 
+        <input id="7" type="radio" name="7. How often do you request for the above mentioned services?" value="Other Answer" required>
+    </label>
+<div id=spacer></div><label>8. What was the usual status of the request?</label>
+    <label>Completed: 
+        <input id="8" type="radio" name="8. What was the usual status of the request?" value="Completed" required>
+    </label>
+
+    <label>Not Completed: 
+        <input id="8" type="radio" name="8. What was the usual status of the request?" value="Not Completed" required>
+    </label>
+<div id=spacer></div><label>9. What was the usual time of the request?</label>
+    <label>8:00 am - 10:00 am: 
+        <input id="9" type="radio" name="9. What was the usual time of the request?" value="8:00 am - 10:00 am" required>
+    </label>
+
+    <label>10:00 am - 12:00 pm: 
+        <input id="9" type="radio" name="9. What was the usual time of the request?" value="10:00 am - 12:00 pm" required>
+    </label>
+
+    <label>1:00 pm - 3:00 pm: 
+        <input id="9" type="radio" name="9. What was the usual time of the request?" value="1:00 pm - 3:00 pm" required>
+    </label>
+
+    <label>3:00 pm - 5:00pm: 
+        <input id="9" type="radio" name="9. What was the usual time of the request?" value="3:00 pm - 5:00pm" required>
+    </label>
+<div id=spacer></div><label>10. Over the last month, how many times have you called for maintenance or repairs?</label>
+    <label>Have Never Called: 
+        <input id="10" type="radio" name="10. Over the last month, how many times have you called for maintenance or repairs?" value="Have Never Called" required>
+    </label>
+
+    <label>1 to 5 Times: 
+        <input id="10" type="radio" name="10. Over the last month, how many times have you called for maintenance or repairs?" value="1 to 5 Times" required>
+    </label>
+
+    <label>6 to 10 Times: 
+        <input id="10" type="radio" name="10. Over the last month, how many times have you called for maintenance or repairs?" value="6 to 10 Times" required>
+    </label>
+
+    <label>More Than 10 Times: 
+        <input id="10" type="radio" name="10. Over the last month, how many times have you called for maintenance or repairs?" value="More Than 10 Times" required>
+    </label>
+<div id=spacer></div><label>11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:</label>
+    <label>Within 1 day: 
+        <input id="11" type="radio" name="11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:" value="Within 1 day" required>
+    </label>
+
+    <label>Within 2 days: 
+        <input id="11" type="radio" name="11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:" value="Within 2 days" required>
+    </label>
+
+    <label>Within 3 days: 
+        <input id="11" type="radio" name="11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:" value="Within 3 days" required>
+    </label>
+
+    <label>Within 4 days: 
+        <input id="11" type="radio" name="11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:" value="Within 4 days" required>
+    </label>
+
+    <label>5 days or more: 
+        <input id="11" type="radio" name="11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:" value="5 days or more" required>
+    </label>
+
+    <label>Problem Never Corrected: 
+        <input id="11" type="radio" name="11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:" value="Problem Never Corrected" required>
+    </label>
+<div id=spacer></div><label>12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:</label>
+    <label>Have Never Called: 
+        <input id="12" type="radio" name="12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:" value="Have Never Called" required>
+    </label>
+
+    <label>Less Than 6 Hours: 
+        <input id="12" type="radio" name="12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:" value="Less Than 6 Hours" required>
+    </label>
+
+    <label>6 to 24 hours: 
+        <input id="12" type="radio" name="12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:" value="6 to 24 hours" required>
+    </label>
+
+    <label>More than 24 hours: 
+        <input id="12" type="radio" name="12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:" value="More than 24 hours" required>
+    </label>
+
+    <label>Problem Never Corrected: 
+        <input id="12" type="radio" name="12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:" value="Problem Never Corrected" required>
+    </label>
+<div id=spacer></div><label>17. How did you request the repair service?</label>
+    <label>By Telephone/Mobile: 
+        <input id="17" type="radio" name="17. How did you request the repair service?" value="By Telephone/Mobile" required>
+    </label>
+
+    <label>By Email: 
+        <input id="17" type="radio" name="17. How did you request the repair service?" value="By Email" required>
+    </label>
+
+    <label>With the help of the Administration Office (Walk-In): 
+        <input id="17" type="radio" name="17. How did you request the repair service?" value="With the help of the Administration Office (Walk-In)" required>
+    </label>
+<div id=spacer></div><label>18. Did you encounter problems when requesting repair service?</label>
+    <label>Always: 
+        <input id="18" type="radio" name="18. Did you encounter problems when requesting repair service?" value="Always" required>
+    </label>
+
+    <label>Very Often: 
+        <input id="18" type="radio" name="18. Did you encounter problems when requesting repair service?" value="Very Often" required>
+    </label>
+
+    <label>Sometimes: 
+        <input id="18" type="radio" name="18. Did you encounter problems when requesting repair service?" value="Sometimes" required>
+    </label>
+
+    <label>Rarely: 
+        <input id="18" type="radio" name="18. Did you encounter problems when requesting repair service?" value="Rarely" required>
+    </label>
+
+    <label>Never: 
+        <input id="18" type="radio" name="18. Did you encounter problems when requesting repair service?" value="Never" required>
+    </label>
+<div id=spacer></div><label>19. How did the repair person communicate with you when the repair was completed?</label>
+    <label>We spoke in person: 
+        <input id="19" type="radio" name="19. How did the repair person communicate with you when the repair was completed?" value="We spoke in person" required>
+    </label>
+
+    <label>He called on the phone: 
+        <input id="19" type="radio" name="19. How did the repair person communicate with you when the repair was completed?" value="He called on the phone" required>
+    </label>
+
+    <label>A note was left in my unit: 
+        <input id="19" type="radio" name="19. How did the repair person communicate with you when the repair was completed?" value="A note was left in my unit" required>
+    </label>
+
+    <label>No one communicated with me: 
+        <input id="19" type="radio" name="19. How did the repair person communicate with you when the repair was completed?" value="No one communicated with me" required>
+    </label>
+<div id=spacer></div><label>20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?</label>
+    <label>Strongly Agree: 
+        <input id="20" type="radio" name="20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?" value="Strongly Agree" required>
+    </label>
+
+    <label>Agree: 
+        <input id="20" type="radio" name="20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?" value="Agree" required>
+    </label>
+
+    <label>Does not apply: 
+        <input id="20" type="radio" name="20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?" value="Does not apply" required>
+    </label>
+
+    <label>Disagree: 
+        <input id="20" type="radio" name="20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?" value="Disagree" required>
+    </label>
+
+    <label>Strongly Disagree: 
+        <input id="20" type="radio" name="20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?" value="Strongly Disagree" required>
+    </label>
+<div id=spacer></div><label>13. How easy it was to request?   </label>
+    <label>Very Satisfied: 
+        <input id="13" type="radio" name="13. How easy it was to request?   " value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="13" type="radio" name="13. How easy it was to request?   " value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="13" type="radio" name="13. How easy it was to request?   " value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="13" type="radio" name="13. How easy it was to request?   " value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>14. How well the repairs were done?   </label>
+    <label>Very Satisfied: 
+        <input id="14" type="radio" name="14. How well the repairs were done?   " value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="14" type="radio" name="14. How well the repairs were done?   " value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="14" type="radio" name="14. How well the repairs were done?   " value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="14" type="radio" name="14. How well the repairs were done?   " value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>15. Person you contacted?    </label>
+    <label>Very Satisfied: 
+        <input id="15" type="radio" name="15. Person you contacted?    " value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="15" type="radio" name="15. Person you contacted?    " value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="15" type="radio" name="15. Person you contacted?    " value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="15" type="radio" name="15. Person you contacted?    " value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>16. Your Property Management?    </label>
+    <label>Very Satisfied: 
+        <input id="16" type="radio" name="16. Your Property Management?    " value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="16" type="radio" name="16. Your Property Management?    " value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="16" type="radio" name="16. Your Property Management?    " value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="16" type="radio" name="16. Your Property Management?    " value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>21. Responsive to your questions and concerns?    </label>
+    <label>Very Satisfied: 
+        <input id="21" type="radio" name="21. Responsive to your questions and concerns?    " value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="21" type="radio" name="21. Responsive to your questions and concerns?    " value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="21" type="radio" name="21. Responsive to your questions and concerns?    " value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="21" type="radio" name="21. Responsive to your questions and concerns?    " value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>22. Being able to arrange a suitable day / date / time for the repair to be carried out</label>
+    <label>Very Satisfied: 
+        <input id="22" type="radio" name="22. Being able to arrange a suitable day / date / time for the repair to be carried out" value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="22" type="radio" name="22. Being able to arrange a suitable day / date / time for the repair to be carried out" value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="22" type="radio" name="22. Being able to arrange a suitable day / date / time for the repair to be carried out" value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="22" type="radio" name="22. Being able to arrange a suitable day / date / time for the repair to be carried out" value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>23. Time taken before work started</label>
+    <label>Very Satisfied: 
+        <input id="23" type="radio" name="23. Time taken before work started" value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="23" type="radio" name="23. Time taken before work started" value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="23" type="radio" name="23. Time taken before work started" value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="23" type="radio" name="23. Time taken before work started" value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>24. The speed of completion of the work</label>
+    <label>Very Satisfied: 
+        <input id="24" type="radio" name="24. The speed of completion of the work" value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="24" type="radio" name="24. The speed of completion of the work" value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="24" type="radio" name="24. The speed of completion of the work" value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="24" type="radio" name="24. The speed of completion of the work" value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>25. The repair being done 'right first time'</label>
+    <label>Very Satisfied: 
+        <input id="25" type="radio" name="25. The repair being done 'right first time'" value="Very Satisfied" required>
+    </label>
+
+    <label>Satisfied: 
+        <input id="25" type="radio" name="25. The repair being done 'right first time'" value="Satisfied" required>
+    </label>
+
+    <label>Dissatisfied: 
+        <input id="25" type="radio" name="25. The repair being done 'right first time'" value="Dissatisfied" required>
+    </label>
+
+    <label>Very Dissatisfied: 
+        <input id="25" type="radio" name="25. The repair being done 'right first time'" value="Very Dissatisfied" required>
+    </label>
+<div id=spacer></div><label>6. What kind of service/s do you usually request? You can choose more than 1.</label>
+    <label>Bidet Installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Bidet Installation" >
+    </label>
+
+    <label>Ceiling Fan Installation and Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Ceiling Fan Installation and Repair" >
+    </label>
+
+    <label>Cook Top, Range and Stove Installation and Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Cook Top, Range and Stove Installation and Repair" >
+    </label>
+
+    <label>Custom Made Cabinets and Installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Custom Made Cabinets and Installation" >
+    </label>
+
+    <label>Door Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Door Repair" >
+    </label>
+
+    <label>Double Locks:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Double Locks" >
+    </label>
+
+    <label>Drain Cleaning:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Drain Cleaning" >
+    </label>
+
+    <label>Drywall Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Drywall Repair" >
+    </label>
+
+    <label>Electric Installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Electric Installation" >
+    </label>
+
+    <label>Electric Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Electric Repair" >
+    </label>
+
+    <label>Exhaust Fan Installation and Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Exhaust Fan Installation and Repair" >
+    </label>
+
+    <label>Faucet Installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Faucet Installation" >
+    </label>
+
+    <label>Heating, Ventilation, and Air Conditioning:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Heating, Ventilation, and Air Conditioning" >
+    </label>
+
+    <label>Heating, Ventilation, and Air Conditioning Basic and General Cleaning:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Heating, Ventilation, and Air Conditioning Basic and General Cleaning" >
+    </label>
+
+    <label>Heating, Ventilation, and Air Conditioning Installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Heating, Ventilation, and Air Conditioning Installation" >
+    </label>
+
+    <label>Lighting and Fixtures Installation and Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Lighting and Fixtures Installation and Repair" >
+    </label>
+
+    <label>Other problems encountered with the facilities management process that were not mentioned in the items above:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Other problems encountered with the facilities management process that were not mentioned in the items above" >
+    </label>
+
+    <label>Other services not mentioned above:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Other services not mentioned above" >
+    </label>
+
+    <label>Plumbing Installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Plumbing Installation" >
+    </label>
+
+    <label>Plumbing Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Plumbing Repair" >
+    </label>
+
+    <label>Shower Heater installation:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Shower Heater installation" >
+    </label>
+
+    <label>TV/Bracket Installation and Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="TV/Bracket Installation and Repair" >
+    </label>
+
+    <label>Washing Machine Installation and Repair:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Washing Machine Installation and Repair" >
+    </label>
+
+    <label>Water Closet Bowl:
+        <input id="6. What kind of service/s do you usually request? You can choose more than 1." type="checkbox" name="6. What kind of service/s do you usually request? You can choose more than 1." value="Water Closet Bowl" >
+    </label>
+
+    <input type="submit" value="predict">
+</form>
