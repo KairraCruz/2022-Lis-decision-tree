@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request
 from main import predict, ranking_order, classifiers
 
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -23,6 +24,14 @@ def ml_api_simulate():
 
 def map_to_ml_input(form):
     multiple_choices_key = "6. What kind of service/s do you usually request? You can choose more than 1."
+    number_of_people_in_your_household_key = '5. Number of people in your household'
+    
+    number_of_people_in_your_household_mapping =  {
+        "1 - 2": "01-Feb",
+        "3 - 5": "03-May",
+        "6 - 7": "06-Jul",
+    }
+
     data = {
         multiple_choices_key: []
     }
@@ -30,6 +39,9 @@ def map_to_ml_input(form):
     for key, value in form.lists():
         if key != multiple_choices_key:
             value = value[0]
+
+            if key.strip() == number_of_people_in_your_household_key:
+                value = number_of_people_in_your_household_mapping.get(value, value)
         else:
             value = ", ".join(value)
 

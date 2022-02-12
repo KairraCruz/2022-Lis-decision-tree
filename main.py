@@ -372,16 +372,21 @@ def main(ranking_order):
         if classifier_report_generator:
             classifier_report_generator(classifier, X, y, ranking_order)
 
-def predict(ranking_order, classifier_class_index, data_to_predict):
-    data_to_predict = {k.strip(): v for k, v in data_to_predict.items()}
 
+def predict(ranking_order, classifier_class_index, input_data_to_predict):
+    from collections import OrderedDict
+
+    data_to_predict = OrderedDict()
+    for k, v in sorted(input_data_to_predict.items(), key=lambda x: int(x[0][:2].strip("."))):
+        data_to_predict[k.strip()] = v.strip()
+        print(k)
+    
     # temporary add a value in target output to skip making extra code in 
     # prepare_records function for handling NaN values.
     global target_output
     data_to_predict[target_output] = ranking_order[0]
 
     data_to_predict = pd.DataFrame.from_dict([data_to_predict])
-    breakpoint()
 
     records = load_csv()
     records = cleanup_dataset(records)
@@ -391,26 +396,29 @@ def predict(ranking_order, classifier_class_index, data_to_predict):
     records, target_output, ranking_order = prepare_records(records, ranking_order)
 
     # after fitting the records, extract the data to predict
-    records = records.iloc[:-1]
-    data_to_predict = records.iloc[-1:]
+    data_to_predict = records[-1:]
+    records = records[:-1]
     del data_to_predict[target_output]
     assert len(records) == records_count
 
     classfier_name, classifier_class, classifier_report_generator = classifiers[classifier_class_index]
     classifier, X, y = fit_to_model(classfier_name, classifier_class, records, target_output)
 
-    print(X[2:3])
-    breakpoint()
-    predict = classifier.predict(X[2:3])
-    #predict = classifier.predict(data_to_predict)
+#    c = records[2:3]
+#    print(c)
+#    del c[target_output]
+#    predict = classifier.predict(c)
+#    print(predict)
+    predict = classifier.predict(data_to_predict)
+#    print(predict)
     output = ranking_order[predict[0]]
     print(output)
     
     return output
 
 if __name__ == "__main__":
-#    main(ranking_order)
+    main(ranking_order)
 
-#    data_sample = {'6. What kind of service/s do you usually request? You can choose more than 1.': 'Bidet Installation, Faucet Installation', '1. Location of Condominium/Flat/Apartment/Townhouse/Villa': 'Makati', '2. Gender': 'Male', '3. Age of head of household': '39 - 45', '4. Type of unit': 'Condominium Unit', '5. Number of people in your household': '6 - 7', '7. How often do you request for the above mentioned services?': 'Once every 3 months', '8. What was the usual status of the request?': 'Not Completed', '9. What was the usual time of the request?': '1:00 pm - 3:00 pm', '10. Over the last month, how many times have you called for maintenance or repairs?': '6 to 10 Times', '11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:': 'Within 1 day', '12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:': 'Less Than 6 Hours', '17. How did you request the repair service?': 'By Telephone/Mobile', '18. Did you encounter problems when requesting repair service?': 'Sometimes', '19. How did the repair person communicate with you when the repair was completed?': 'He called on the phone', '20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?': 'Strongly Agree', '13. How easy it was to request? ': 'Very Satisfied', '14. How well the repairs were done? ': 'Satisfied', '15. Person you contacted? ': 'Satisfied', '16. Your Property Management? ': 'Very Satisfied', '21. Responsive to your questions and concerns? ': 'Satisfied', '22. Being able to arrange a suitable day / date / time for the repair to be carried out': 'Dissatisfied', '23. Time taken before work started': 'Very Satisfied', '24. The speed of completion of the work': 'Very Satisfied', "25. The repair being done 'right first time'": 'Satisfied'}
-    data_sample = {'6. What kind of service/s do you usually request? You can choose more than 1.': 'Bidet Installation, Electric Installation, Heating, Ventilation, and Air Conditioning Basic and General Cleaning, Plumbing Repair', '1. Location of Condominium/Flat/Apartment/Townhouse/Villa': 'Makati', '2. Gender': 'Male', '3. Age of head of household': '18 - 24', '4. Type of unit': 'Flat', '5. Number of people in your household': '3 - 5', '7. How often do you request for the above mentioned services?': 'Once every 3 months', '8. What was the usual status of the request?': 'Not Completed', '9. What was the usual time of the request?': '10:00 am - 12:00 pm', '10. Over the last month, how many times have you called for maintenance or repairs?': '1 to 5 Times', '11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:': 'Problem Never Corrected', '12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:': 'More than 24 hours', '17. How did you request the repair service?': 'By Telephone/Mobile', '18. Did you encounter problems when requesting repair service?': 'Very Often', '19. How did the repair person communicate with you when the repair was completed?': 'No one communicated with me', '20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?': 'Disagree', '13. How easy it was to request?   ': 'Very Dissatisfied', '14. How well the repairs were done?   ': 'Dissatisfied', '15. Person you contacted?    ': 'Dissatisfied', '16. Your Property Management?    ': 'Dissatisfied', '21. Responsive to your questions and concerns?    ': 'Dissatisfied', '22. Being able to arrange a suitable day / date / time for the repair to be carried out': 'Very Dissatisfied', '23. Time taken before work started': 'Very Dissatisfied', '24. The speed of completion of the work': 'Very Dissatisfied', "25. The repair being done 'right first time'": 'Satisfied'}
-    predict(ranking_order, 0, data_sample)
+#    data_sample = {'6. What kind of service/s do you usually request? You can choose more than 1.': 'Bidet Installation, Faucet Installation', '1. Location of Condominium/Flat/Apartment/Townhouse/Villa': 'Makati', '2. Gender': 'Male', '3. Age of head of household': '39 - 45', '4. Type of unit': 'Condominium Unit', '5. Number of people in your household': '03-May', '7. How often do you request for the above mentioned services?': 'Once every 3 months', '8. What was the usual status of the request?': 'Not Completed', '9. What was the usual time of the request?': '1:00 pm - 3:00 pm', '10. Over the last month, how many times have you called for maintenance or repairs?': '6 to 10 Times', '11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:': 'Within 1 day', '12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:': 'Less Than 6 Hours', '17. How did you request the repair service?': 'By Telephone/Mobile', '18. Did you encounter problems when requesting repair service?': 'Sometimes', '19. How did the repair person communicate with you when the repair was completed?': 'He called on the phone', '20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?': 'Strongly Agree', '13. How easy it was to request? ': 'Very Satisfied', '14. How well the repairs were done? ': 'Satisfied', '15. Person you contacted? ': 'Satisfied', '16. Your Property Management? ': 'Very Satisfied', '21. Responsive to your questions and concerns? ': 'Satisfied', '22. Being able to arrange a suitable day / date / time for the repair to be carried out': 'Dissatisfied', '23. Time taken before work started': 'Very Satisfied', '24. The speed of completion of the work': 'Very Satisfied', "25. The repair being done 'right first time'": 'Satisfied'}
+#    data_sample = {'6. What kind of service/s do you usually request? You can choose more than 1.': 'Bidet Installation, Electric Installation, Heating, Ventilation, and Air Conditioning Basic and General Cleaning, Plumbing Repair', '1. Location of Condominium/Flat/Apartment/Townhouse/Villa': 'Makati', '2. Gender': 'Male', '3. Age of head of household': '18 - 24', '4. Type of unit': 'Flat', '5. Number of people in your household': '03-May', '7. How often do you request for the above mentioned services?': 'Once every 3 months', '8. What was the usual status of the request?': 'Not Completed', '9. What was the usual time of the request?': '10:00 am - 12:00 pm', '10. Over the last month, how many times have you called for maintenance or repairs?': '1 to 5 Times', '11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:': 'Problem Never Corrected', '12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:': 'More than 24 hours', '17. How did you request the repair service?': 'By Telephone/Mobile', '18. Did you encounter problems when requesting repair service?': 'Very Often', '19. How did the repair person communicate with you when the repair was completed?': 'No one communicated with me', '20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?': 'Disagree', '13. How easy it was to request?   ': 'Dissatisfied', '14. How well the repairs were done?   ': 'Dissatisfied', '15. Person you contacted?    ': 'Dissatisfied', '16. Your Property Management?    ': 'Dissatisfied', '21. Responsive to your questions and concerns?    ': 'Dissatisfied', '22. Being able to arrange a suitable day / date / time for the repair to be carried out': 'Dissatisfied', '23. Time taken before work started': 'Dissatisfied', '24. The speed of completion of the work': 'Dissatisfied', "25. The repair being done 'right first time'": 'Satisfied'}
+#    predict(ranking_order, 0, data_sample)
