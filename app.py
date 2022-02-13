@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request
-from main import predict, ranking_order, classifiers
+from main import predict, classifiers
 
 
 app = Flask(__name__)
@@ -16,7 +16,7 @@ def ml_api_simulate():
     outputs = {}
 
     for classifier_class_index, (classifier_name, *rest) in enumerate(classifiers):
-        p = predict(ranking_order, classifier_class_index, input_data)
+        p = predict(classifier_class_index, input_data)
         outputs[classifier_name] = p
 
     return outputs

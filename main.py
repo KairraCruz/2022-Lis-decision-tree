@@ -189,17 +189,20 @@ def label_encode(records, columns_to_label_encode, target_output, ranking_order)
     if columns_to_label_encode is None:
         columns_to_label_encode = records.columns
 
+    class_names = {}
 
     for column in columns_to_label_encode:
         if column != target_output:
-            records[column] = LabelEncoder().fit_transform(records[column])
+            le = LabelEncoder()
+            records[column] = le.fit_transform(records[column])
+            class_names[column] = list(le.classes_)
         else:
             le = LabelEncoder()
             le.fit(ranking_order)
             records[column] = le.transform(records[column])
             ranking_order = list(le.classes_)
 
-    return records, ranking_order
+    return records, ranking_order, class_names
 
 def preprocess_records_for_fitting(records, target_output, ranking_order):
     # preprocess records for fitting to decision tree
@@ -208,10 +211,10 @@ def preprocess_records_for_fitting(records, target_output, ranking_order):
     # 3. One hot encode responses everything else
 
     records = split_multiple_choice_and_one_hot_encode(records, columns_multiple_choice)
-    records, ranking_order = label_encode(records, columns_to_label_encode, target_output, ranking_order)
+    records, ranking_order, classes = label_encode(records, columns_to_label_encode, target_output, ranking_order)
     records = one_hot_encode(records, columns_to_label_encode)
 
-    return records, ranking_order
+    return records, ranking_order, classes
 
 def fit_to_model(classfier_name, classifier_class, records, target_output):
     X = records.loc[:, records.columns != target_output]
@@ -226,7 +229,7 @@ def fit_to_model(classfier_name, classifier_class, records, target_output):
 
     return classifier, X, y
 
-def generate_decision_tree_report(classifier, X, y, ranking_order):
+def generate_decision_tree_report(classifier, X, y, ranking_order, class_names):
     output_pngfile = "decision_tree.png"
     output_textfile = "decision_tree.txt"
     output_svgfile = "decision_tree.svg"
@@ -281,14 +284,13 @@ def generate_decision_tree_report(classifier, X, y, ranking_order):
     #generate_txt()
 
 # https://stackoverflow.com/a/56301555/1599
-def generate_density_report(filename, classifier, X, y, ranking_order):
+def generate_density_report(filename, classifier, X, y, ranking_order, class_names):
     '''
     Plot features densities depending on the outcome values
     '''
     # separate data based on outcome values
 
     data = pd.concat([X, y], axis=1)
-
     outcome_0 = data[data[target_output] == 0]
     outcome_1 = data[data[target_output] == 1]
     outcome_2 = data[data[target_output] == 2]
@@ -318,6 +320,7 @@ def generate_density_report(filename, classifier, X, y, ranking_order):
                 outcome[column_name].plot(kind='density', ax=ax, subplots=True, 
                                             sharex=False, color=color, legend=True,
                                             label=ranking)
+                #ax.set_yticklabels(class_names[column_name])
             except numpy.linalg.LinAlgError:
                 continue
             
@@ -327,21 +330,22 @@ def generate_density_report(filename, classifier, X, y, ranking_order):
 
 #    plt.show()
     fig.savefig(filename)
+    breakpoint()
 
-def generate_knn_report(classifier, X, y, ranking_order):
+def generate_knn_report(classifier, X, y, ranking_order, class_names):
     filename = "KNN densities.png"
-    generate_density_report(filename, classifier, X, y, ranking_order)
+    generate_density_report(filename, classifier, X, y, ranking_order, class_names)
     print(f"Saved {filename}")
 
-def generate_logistic_regression_report(classifier, X, y, ranking_order):
+def generate_logistic_regression_report(classifier, X, y, ranking_order, class_names):
     filename = "Logistic Regression densities.png"
-    generate_density_report(filename, classifier, X, y, ranking_order)
+    generate_density_report(filename, classifier, X, y, ranking_order, class_names)
     print(f"Saved {filename}")
 
 classifiers = [
-    ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
+#    ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
     ("k-Nearest Neighbors", neighbors.KNeighborsClassifier(), generate_knn_report),
-    ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
+#    ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
 ]
 
 def cleanup_dataset(records):
@@ -355,25 +359,26 @@ def cleanup_dataset(records):
 
 def prepare_records(records, ranking_order):
     target_output = get_target_output(records, prompt=False)
-    records, ranking_order = preprocess_records_for_fitting(records, target_output, ranking_order)
+    records, ranking_order, class_names = preprocess_records_for_fitting(records, target_output, ranking_order)
 
-    return records, target_output, ranking_order
+    return records, target_output, ranking_order, class_names
 
-def main(ranking_order):
+def main():
     records = load_csv()
     records = cleanup_dataset(records)
 
-    records, target_output, ranking_order = prepare_records(records, ranking_order)
+    global ranking_order
+    records, target_output, ranking_order, class_names = prepare_records(records, ranking_order)
 
     for classfier_name, classifier_class, classifier_report_generator in classifiers:
         print("")
         classifier, X, y = fit_to_model(classfier_name, classifier_class, records, target_output)
 
         if classifier_report_generator:
-            classifier_report_generator(classifier, X, y, ranking_order)
+            classifier_report_generator(classifier, X, y, ranking_order, class_names)
 
 
-def predict(ranking_order, classifier_class_index, input_data_to_predict):
+def predict(classifier_class_index, input_data_to_predict):
     from collections import OrderedDict
 
     data_to_predict = OrderedDict()
@@ -393,7 +398,7 @@ def predict(ranking_order, classifier_class_index, input_data_to_predict):
     records_count = len(records)
     records = pd.concat([records, data_to_predict], ignore_index=True)
 
-    records, target_output, ranking_order = prepare_records(records, ranking_order)
+    records, target_output, ranking_order, class_names = prepare_records(records, ranking_order)
 
     # after fitting the records, extract the data to predict
     data_to_predict = records[-1:]
@@ -417,8 +422,8 @@ def predict(ranking_order, classifier_class_index, input_data_to_predict):
     return output
 
 if __name__ == "__main__":
-    main(ranking_order)
+    main()
 
 #    data_sample = {'6. What kind of service/s do you usually request? You can choose more than 1.': 'Bidet Installation, Faucet Installation', '1. Location of Condominium/Flat/Apartment/Townhouse/Villa': 'Makati', '2. Gender': 'Male', '3. Age of head of household': '39 - 45', '4. Type of unit': 'Condominium Unit', '5. Number of people in your household': '03-May', '7. How often do you request for the above mentioned services?': 'Once every 3 months', '8. What was the usual status of the request?': 'Not Completed', '9. What was the usual time of the request?': '1:00 pm - 3:00 pm', '10. Over the last month, how many times have you called for maintenance or repairs?': '6 to 10 Times', '11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:': 'Within 1 day', '12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:': 'Less Than 6 Hours', '17. How did you request the repair service?': 'By Telephone/Mobile', '18. Did you encounter problems when requesting repair service?': 'Sometimes', '19. How did the repair person communicate with you when the repair was completed?': 'He called on the phone', '20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?': 'Strongly Agree', '13. How easy it was to request? ': 'Very Satisfied', '14. How well the repairs were done? ': 'Satisfied', '15. Person you contacted? ': 'Satisfied', '16. Your Property Management? ': 'Very Satisfied', '21. Responsive to your questions and concerns? ': 'Satisfied', '22. Being able to arrange a suitable day / date / time for the repair to be carried out': 'Dissatisfied', '23. Time taken before work started': 'Very Satisfied', '24. The speed of completion of the work': 'Very Satisfied', "25. The repair being done 'right first time'": 'Satisfied'}
 #    data_sample = {'6. What kind of service/s do you usually request? You can choose more than 1.': 'Bidet Installation, Electric Installation, Heating, Ventilation, and Air Conditioning Basic and General Cleaning, Plumbing Repair', '1. Location of Condominium/Flat/Apartment/Townhouse/Villa': 'Makati', '2. Gender': 'Male', '3. Age of head of household': '18 - 24', '4. Type of unit': 'Flat', '5. Number of people in your household': '03-May', '7. How often do you request for the above mentioned services?': 'Once every 3 months', '8. What was the usual status of the request?': 'Not Completed', '9. What was the usual time of the request?': '10:00 am - 12:00 pm', '10. Over the last month, how many times have you called for maintenance or repairs?': '1 to 5 Times', '11. If you called for NON-EMERGENCY maintenance or repairs (for example, leaky faucet, broken light, etc.) the work was usually completed in:': 'Problem Never Corrected', '12. If you called for EMERGENCY maintenance or repairs (for example, toilet plugged up, gas leak, etc.) the work was usually completed in:': 'More than 24 hours', '17. How did you request the repair service?': 'By Telephone/Mobile', '18. Did you encounter problems when requesting repair service?': 'Very Often', '19. How did the repair person communicate with you when the repair was completed?': 'No one communicated with me', '20. Do you think management provides you information about maintenance and repair (for example, water shut off, modernization activities)?': 'Disagree', '13. How easy it was to request?   ': 'Dissatisfied', '14. How well the repairs were done?   ': 'Dissatisfied', '15. Person you contacted?    ': 'Dissatisfied', '16. Your Property Management?    ': 'Dissatisfied', '21. Responsive to your questions and concerns?    ': 'Dissatisfied', '22. Being able to arrange a suitable day / date / time for the repair to be carried out': 'Dissatisfied', '23. Time taken before work started': 'Dissatisfied', '24. The speed of completion of the work': 'Dissatisfied', "25. The repair being done 'right first time'": 'Satisfied'}
-#    predict(ranking_order, 0, data_sample)
+#    predict(0, data_sample)
