@@ -373,8 +373,8 @@ def main():
     for key, value in class_names.items():
         print(f"\n{key}:")
         for i, v in enumerate(value):
-            if v == 0: v = "True"
-            if v == 1: v = "False"
+            if v == 0: v = "False"
+            if v == 1: v = "True"
 
             print(f"\t{i}: {v}")
 
@@ -396,7 +396,7 @@ def predict(classifier_class_index, input_data_to_predict):
     
     # temporary add a value in target output to skip making extra code in 
     # prepare_records function for handling NaN values.
-    global target_output
+    global target_output, ranking_order
     data_to_predict[target_output] = ranking_order[0]
 
     data_to_predict = pd.DataFrame.from_dict([data_to_predict])
