@@ -19,7 +19,7 @@ def ml_api_simulate():
         p = predict(ranking_order, classifier_class_index, input_data)
         outputs[classifier_name] = p
 
-    return str(outputs)
+    return outputs
 
 
 def map_to_ml_input(form):
