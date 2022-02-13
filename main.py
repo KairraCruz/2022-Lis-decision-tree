@@ -330,7 +330,6 @@ def generate_density_report(filename, classifier, X, y, ranking_order, class_nam
 
 #    plt.show()
     fig.savefig(filename)
-    breakpoint()
 
 def generate_knn_report(classifier, X, y, ranking_order, class_names):
     filename = "KNN densities.png"
@@ -343,9 +342,9 @@ def generate_logistic_regression_report(classifier, X, y, ranking_order, class_n
     print(f"Saved {filename}")
 
 classifiers = [
-#    ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
+    ("Decision tree", tree.DecisionTreeClassifier(random_state=42), generate_decision_tree_report),
     ("k-Nearest Neighbors", neighbors.KNeighborsClassifier(), generate_knn_report),
-#    ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
+    ("Logistic Regression", linear_model.LogisticRegression(random_state=42, max_iter=1000), generate_logistic_regression_report),
 ]
 
 def cleanup_dataset(records):
@@ -369,6 +368,15 @@ def main():
 
     global ranking_order
     records, target_output, ranking_order, class_names = prepare_records(records, ranking_order)
+    
+    print("\nScalar values per class:")
+    for key, value in class_names.items():
+        print(f"\n{key}:")
+        for i, v in enumerate(value):
+            if v == 0: v = "True"
+            if v == 1: v = "False"
+
+            print(f"\t{i}: {v}")
 
     for classfier_name, classifier_class, classifier_report_generator in classifiers:
         print("")
